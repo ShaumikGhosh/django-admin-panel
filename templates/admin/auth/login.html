@@ -1,0 +1,50 @@
+{% extends 'admin/auth/base.html' %}
+
+{% block admin-title %}Login Dashboard{% endblock %}
+
+{% block admin-body %}
+    <div class="card card-login mx-auto mt-5">
+        {% if error_msg %}
+            <div class="card-header" style="color: red;background-color: #ffcccc; padding: 10px;text-align: center;">{{ error_msg }}</div>
+        {% elif messages %}
+            {% for message in messages %}
+                {% if 'password_changed_success' in message.tags %}
+                    <div style="color: green; background-color: #ebfaeb; padding: 10px;text-align: center;">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+              <div class="card-header">Login @ { Powered by Python }</div>
+        {% endif %}
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="form-group">
+              {{ form.userCt }}
+          </div>
+            {% if form.userCt.errors %}
+                <div class="form-group">
+                    {{ form.userCt.errors }}
+                </div>
+            {% endif %}
+          <div class="form-group">
+              {{ form.password }}
+          </div>
+            {% if form.password.errors %}
+                <div class="form-group">
+                    {{ form.password.errors }}
+                </div>
+            {% endif %}
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                {{ form.remember_me }}
+                {{ form.remember_me.label }}
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+      </div>
+    </div>
+{% endblock %}

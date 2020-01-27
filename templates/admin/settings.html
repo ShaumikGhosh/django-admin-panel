@@ -1,0 +1,175 @@
+{% extends 'admin/base.html' %}
+
+{% block admin-title %}Dashboard Settings{% endblock %}
+
+{% block admin-body%}
+<div class="container-fluid">
+    {% if operational_error_msg %}
+        <div style="background-color: #ffe6e6; padding: 10px; width: 100%; color: red; border-radius: 3px; margin-bottom: 20px;text-align: center">
+            {{ operational_error_msg }}
+        </div>
+    {% elif operational_success_msg %}
+        <div style="background-color:#e6ffe6; padding: 10px; width: 100%; color: green; border-radius: 3px; margin-bottom: 20px;text-align: center">
+            {{ operational_success_msg }}
+        </div>
+    {% endif %}
+    <div class="container">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#home">Change Password</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#menu1">Manage User</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#menu2">User Permission Group</a>
+        </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div id="home" class="container tab-pane active" style="width: 400px; margin: auto; margin-bottom: 100px;"><br><br>
+                <div>
+                    <form method="post">{% csrf_token %}
+                        {% if error_msg %}
+                            <div style="color: red; background-color: #ffe6e6; padding: 10px;text-align: center;margin-bottom: 20px;border: 1px solid red;">
+                                {{ error_msg }}
+                            </div>
+                        {% endif %}
+                      <div class="form-group">
+                          <label for="old-password">{{ form.oldPassword.label }}:</label>
+                          {{ form.oldPassword }}
+                      </div>
+                        {% if form.oldPassword %}
+                            <div class="form-group my-list" style="color:red;">
+                                {{ form.oldPassword.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="form-group">
+                          <label for="new-password">{{ form.newPassword.label }}:</label>
+                          {{ form.newPassword }}
+                        </div>
+                        {% if form.newPassword %}
+                            <div class="form-group my-list" style="color:red;">
+                                {{ form.newPassword.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="form-group">
+                          <label for="pwd">{{ form.confirmPassword.label }}:</label>
+                          {{ form.confirmPassword }}
+                        </div>
+                        {% if form.confirmPassword %}
+                            <div class="form-group my-list" style="color:red;">
+                                {{ form.confirmPassword.errors }}
+                            </div>
+                        {% endif %}
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                                <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        <button type="submit" name="change_password_button" class="btn btn-primary btn-sm btn-block" style="float: right;">Change Password</button>
+                    </form>
+                </div>
+            </div>
+            <div id="menu1" class="container tab-pane fade"><br>
+                <div class="input-group mb-3" style="max-width: 400px;margin: auto;">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search your content here ... " aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary btn-sm" type="submit">Search</button>
+                    </div>
+                </div>
+              <div>
+                      {% for user in users %}
+                          <input type="hidden" name="hidden_value" value="{{ user.id }}">
+                      {% endfor %}
+                    <form method="post">{% csrf_token %}
+                        {{ actionForm.selectAction }}
+                        <button type="submit" style="margin-bottom: 6px;background-color: lightseagreen;border: none;border-radius: 3px;color: whitesmoke;" name="user_action_button">Go</button>
+                        <a href="" class="btn btn-warning btn-sm" style="margin-bottom: 5px;float: right;">Add New User</a><br>
+                    <table class="table table-sm" style="text-align: center;">
+                      <thead class="thead-dark">
+                        <tr>
+                            <th></th>
+                          <th scope="col">First Name</th>
+                          <th scope="col">Last Name</th>
+                          <th scope="col">Username</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Active</th>
+                          <th scope="col">Staff</th>
+                          <th scope="col">Superuser</th>
+                          <th scope="col">Joined At</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for user in users %}
+                        <tr>
+                            {% if user.id == user.is_authenticated %}
+                                <th><img src="https://png.pngtree.com/svg/20170407/report_user_online_report_1147472.png"
+                                width="25" title="Logged in user"> </th>
+                            {% else  %}
+                                <th><input type="checkbox" name="checkedItems" value="{{ user.id }}"> </th>
+                            {% endif %}
+                          <td>
+                              {% if user.first_name %}
+                                  {{ user.first_name }}
+                              {% else %}
+                                  -- empty --
+                              {% endif %}
+                          </td>
+                          <td>
+                              {% if user.first_name %}
+                                  {{ user.last_name }}
+                              {% else %}
+                                  -- empty --
+                              {% endif %}
+                          </td>
+                          <td>{{ user.username }}</td>
+                          <td>{{ user.email }}</td>
+                          <td>
+                              {% if user.is_active %}
+                                  <img src="https://images.vexels.com/media/users/3/157890/isolated/preview/4f2c005416b7f48b3d6d09c5c6763d87-check-mark-circle-icon-by-vexels.png" width="20">
+                              {% else %}
+                                  <img src="https://aws1.discourse-cdn.com/pocketgems/uploads/episodeinteractive/optimized/4X/2/7/f/27ffe3f08584ae4e05aa0ae4205767123609a202_2_477x500.png" width="20">
+                              {% endif %}
+                          </td>
+                          <td>
+                              {% if user.is_staff %}
+                                  <img src="https://images.vexels.com/media/users/3/157890/isolated/preview/4f2c005416b7f48b3d6d09c5c6763d87-check-mark-circle-icon-by-vexels.png" width="20">
+                              {% else %}
+                                  <img src="https://aws1.discourse-cdn.com/pocketgems/uploads/episodeinteractive/optimized/4X/2/7/f/27ffe3f08584ae4e05aa0ae4205767123609a202_2_477x500.png" width="20">
+                              {% endif %}
+                          </td>
+                          <td>
+                              {% if user.is_superuser %}
+                                  <img src="https://images.vexels.com/media/users/3/157890/isolated/preview/4f2c005416b7f48b3d6d09c5c6763d87-check-mark-circle-icon-by-vexels.png" width="20">
+                              {% else %}
+                                  <img src="https://aws1.discourse-cdn.com/pocketgems/uploads/episodeinteractive/optimized/4X/2/7/f/27ffe3f08584ae4e05aa0ae4205767123609a202_2_477x500.png" width="20">
+                              {% endif %}
+                          </td>
+                          <td>{{ user.date_joined }}</td>
+                          <td>
+                              <a class="btn btn-sm btn-primary" style="color: white;cursor: pointer;"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                              {% if user.id == user.is_authenticated %}
+                                  <a class="btn btn-sm btn-danger" style="color: white; background-color: #ffcccc;border: none;" title="Logged in user can't be deleted"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                              {% else %}
+                                <a class="btn btn-sm btn-danger" style="color: white;cursor: pointer;"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                              {% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                    </form>
+                </div>
+            </div>
+            <div id="menu2" class="container tab-pane fade"><br>
+              <h3>Menu 2</h3>
+              <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

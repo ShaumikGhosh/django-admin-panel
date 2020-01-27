@@ -1,0 +1,13 @@
+li{
+    list-style: none;
+}
+.errorlist{
+    margin-left: -40px;
+    color: red;
+}
+.bg-dark{
+    background-color: #B30B00 !important;
+    background-image: url('/staticfiles/admin/img/lgb.jpeg') !important;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
